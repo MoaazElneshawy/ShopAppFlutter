@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/pages/cart_page.dart';
 import 'package:shopapp/providers/cart.dart';
 import 'package:shopapp/providers/products_provider.dart';
 import 'package:shopapp/widgets/badge.dart';
@@ -33,7 +34,9 @@ class _ProductsReviewPageState extends State<ProductsReviewPage> {
             // the child will not change if the data changes so it will be the same
             child: IconButton(
               icon: Icon(Icons.shopping_cart),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartPage.ROUTE_NAME);
+              },
             ),
           ),
           PopupMenuButton(
