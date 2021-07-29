@@ -4,14 +4,47 @@ import 'package:shopapp/providers/products_provider.dart';
 
 import '../widgets/product_item.dart';
 
-class ProductsReviewPage extends StatelessWidget {
+class ProductsReviewPage extends StatefulWidget {
+  @override
+  _ProductsReviewPageState createState() => _ProductsReviewPageState();
+}
+
+class _ProductsReviewPageState extends State<ProductsReviewPage> {
+  bool isFavoriteSelected = false;
+
   @override
   Widget build(BuildContext context) {
-    final products = Provider.of<ProductsProvider>(context).products;
+    final provider = Provider.of<ProductsProvider>(context);
+    final products =
+        isFavoriteSelected ? provider.favorites : provider.products;
 
     return Scaffold(
       appBar: AppBar(
         title: Text("My Shop"),
+        actions: [
+          PopupMenuButton(
+            onSelected: (FilterOptions selectedValue) {
+              setState(() {
+                if (selectedValue == FilterOptions.Favorite) {
+                  isFavoriteSelected = true;
+                } else {
+                  isFavoriteSelected = false;
+                }
+              });
+            },
+            itemBuilder: (ctx) => [
+              PopupMenuItem(
+                child: Text("Favorites Only"),
+                value: FilterOptions.Favorite,
+              ),
+              PopupMenuItem(
+                child: Text("Show All"),
+                value: FilterOptions.All,
+              )
+            ],
+            child: Icon(Icons.more_vert),
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -32,4 +65,9 @@ class ProductsReviewPage extends StatelessWidget {
       ),
     );
   }
+}
+
+enum FilterOptions {
+  Favorite,
+  All,
 }
