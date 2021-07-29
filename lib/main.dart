@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/pages/product_details.dart';
 import 'package:shopapp/pages/product_review_page.dart';
 import 'package:shopapp/providers/products_provider.dart';
 
@@ -11,8 +12,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (ctx) => ProductsProvider(),
+    return ChangeNotifierProvider.value(
+      // create: (ctx) => ProductsProvider(),
+      value: ProductsProvider(),
       child: MaterialApp(
         title: 'My Shop',
         theme: ThemeData(
@@ -22,6 +24,9 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: ProductsReviewPage(),
+        routes: {
+          ProductDetailsPage.ROUTE_NAME: (ctx) => ProductDetailsPage(),
+        },
       ),
     );
   }

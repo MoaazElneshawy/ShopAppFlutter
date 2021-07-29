@@ -17,7 +17,12 @@ class ProductsReviewPage extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         child: GridView.builder(
           itemCount: products.length,
-          itemBuilder: (ctx, index) => ProductItem(products[index]),
+          itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
+            value: products[index],
+            // create: (ctx)=>products[index],
+            // not using create because we didn't need the context passed from the create
+            child: ProductItem(),
+          ),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               childAspectRatio: 3 / 2,

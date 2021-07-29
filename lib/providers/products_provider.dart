@@ -38,4 +38,8 @@ class ProductsProvider with ChangeNotifier {
   ];
 
   List<Product> get products => [..._products]; // returns a copy of the list !
+
+  Product findProductById(String id) {
+    return _products.firstWhere((product) => product.id == id);
+  }
 }
