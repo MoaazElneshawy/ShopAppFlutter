@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/providers/cart.dart';
 import 'package:shopapp/providers/products_provider.dart';
+import 'package:shopapp/widgets/badge.dart';
 
 import '../widgets/product_item.dart';
 
@@ -22,6 +24,18 @@ class _ProductsReviewPageState extends State<ProductsReviewPage> {
       appBar: AppBar(
         title: Text("My Shop"),
         actions: [
+          Consumer<CartProvider>(
+            builder: (ctx, cart, child) => Badge(
+              child: child,
+              // the child will be the IconButton passed to the Consumer
+              value: cart.cartCount.toString(),
+            ),
+            // the child will not change if the data changes so it will be the same
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {},
+            ),
+          ),
           PopupMenuButton(
             onSelected: (FilterOptions selectedValue) {
               setState(() {
