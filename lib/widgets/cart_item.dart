@@ -11,15 +11,19 @@ class CartItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       key: ValueKey(cartItem.itemId),
-      background: Container(
+      background: Card(
         color: Theme.of(context).errorColor,
-        child: Icon(
-          Icons.delete,
-          color: Colors.white,
-          size: 35,
+        child: Container(
+          color: Theme.of(context).errorColor,
+          child: Icon(
+            Icons.delete,
+            color: Colors.white,
+            size: 35,
+          ),
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 20),
+          margin: const EdgeInsets.all(5),
         ),
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
       ),
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
