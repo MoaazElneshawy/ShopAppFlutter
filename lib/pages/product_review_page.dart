@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/pages/cart_page.dart';
+import 'package:shopapp/pages/my_drawer.dart';
 import 'package:shopapp/providers/cart.dart';
 import 'package:shopapp/providers/products_provider.dart';
 import 'package:shopapp/widgets/badge.dart';
@@ -63,6 +64,7 @@ class _ProductsReviewPageState extends State<ProductsReviewPage> {
           )
         ],
       ),
+      drawer: MyDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: GridView.builder(
