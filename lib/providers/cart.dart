@@ -54,4 +54,9 @@ class CartProvider with ChangeNotifier {
     });
     return total;
   }
+
+  void deleteItem(String id) {
+    _items.removeWhere((_, item) => item.itemId == id);
+    notifyListeners();
+  }
 }
