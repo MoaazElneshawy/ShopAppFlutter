@@ -51,4 +51,17 @@ class ProductsProvider with ChangeNotifier {
     _products.insert(0, product);
     notifyListeners();
   }
+
+  void updateProduct(Product old, Product _new) {
+    int index = _products.indexWhere((product) => product.id == old.id);
+    if (index != -1) {
+      _products[index] = _new;
+    }
+    notifyListeners();
+  }
+
+  void removeProduct(Product product) {
+    _products.remove(product);
+    notifyListeners();
+  }
 }

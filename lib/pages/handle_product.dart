@@ -11,10 +11,16 @@ class HandleProductPage extends StatefulWidget {
 }
 
 class _HandleProductPageState extends State<HandleProductPage> {
-  String _title = "";
-  double _price = 0.0;
-  String _description = "";
-  String _imageUrl = "";
+  bool _isEdit = false;
+  ProductsProvider _productProvider;
+  Product _product = Product(
+      id: DateTime.now().toString(),
+      title: null,
+      description: null,
+      imageUrl: null,
+      price: null);
+
+  Product _editedProduct = null;
 
   final _formKeyState = GlobalKey<FormState>();
   final _priceFocus = FocusNode();
@@ -48,17 +54,25 @@ class _HandleProductPageState extends State<HandleProductPage> {
       return;
     }
     _formKeyState.currentState.save();
-    Provider.of<ProductsProvider>(context, listen: false).addNewProduct(Product(
-        id: DateTime.now().toString(),
-        title: _title,
-        description: _description,
-        imageUrl: _imageUrl,
-        price: _price));
+    if (_isEdit) {
+      _productProvider.updateProduct(_editedProduct, _product);
+    } else
+      _productProvider.addNewProduct(_product);
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    _productProvider = Provider.of<ProductsProvider>(context, listen: false);
+    _editedProduct = ModalRoute.of(context).settings.arguments as Product;
+
+    _isEdit = _editedProduct != null;
+
+    if (_isEdit) {
+      // You cannot set init value for TextFormField which has a controller, so you pass your value to the controller
+      _imageController.text = _editedProduct.imageUrl;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Handle Product"),
@@ -81,6 +95,7 @@ class _HandleProductPageState extends State<HandleProductPage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    initialValue: _isEdit ? "${_editedProduct.title}" : "",
                     maxLines: 1,
                     decoration: InputDecoration(
                         labelText: 'Title',
@@ -91,7 +106,14 @@ class _HandleProductPageState extends State<HandleProductPage> {
                     onFieldSubmitted: (value) {
                       FocusScope.of(context).requestFocus(_priceFocus);
                     },
-                    onSaved: (value) => _title = value,
+                    onSaved: (value) {
+                      _product = Product(
+                          id: _product.id,
+                          title: value,
+                          description: _product.description,
+                          imageUrl: _product.imageUrl,
+                          price: _product.price);
+                    },
                     validator: (value) {
                       if (value.isEmpty) {
                         return "Please enter product title.";
@@ -106,9 +128,17 @@ class _HandleProductPageState extends State<HandleProductPage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    initialValue: _isEdit ? "${_editedProduct.price}" : "",
                     focusNode: _priceFocus,
                     maxLines: 1,
-                    onSaved: (value) => _price = double.parse(value),
+                    onSaved: (value) {
+                      _product = Product(
+                          id: _product.id,
+                          title: _product.title,
+                          description: _product.description,
+                          imageUrl: _product.imageUrl,
+                          price: double.parse(value));
+                    },
                     decoration: InputDecoration(
                         labelText: 'Price',
                         border: OutlineInputBorder(
@@ -135,8 +165,17 @@ class _HandleProductPageState extends State<HandleProductPage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                      initialValue:
+                          _isEdit ? "${_editedProduct.description}" : "",
                       maxLength: 100,
-                      onSaved: (value) => _description = value,
+                      onSaved: (value) {
+                        _product = Product(
+                            id: _product.id,
+                            title: _product.title,
+                            description: value,
+                            imageUrl: _product.imageUrl,
+                            price: _product.price);
+                      },
                       focusNode: _descriptionFocus,
                       maxLines: 3,
                       validator: (value) {
@@ -174,7 +213,14 @@ class _HandleProductPageState extends State<HandleProductPage> {
                           controller: _imageController,
                           focusNode: _imageFocus,
                           maxLines: 1,
-                          onSaved: (value) => _imageUrl = value,
+                          onSaved: (value) {
+                            _product = Product(
+                                id: _product.id,
+                                title: _product.title,
+                                description: _product.description,
+                                imageUrl: value,
+                                price: _product.price);
+                          },
                           validator: (value) {
                             if (value.isEmpty) {
                               return "Please enter product image url.";

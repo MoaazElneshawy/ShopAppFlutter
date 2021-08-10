@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shopapp/models/product.dart';
+import 'package:shopapp/pages/handle_product.dart';
+import 'package:shopapp/providers/products_provider.dart';
 
 class UserProductItem extends StatelessWidget {
   final Product _product;
@@ -24,7 +27,28 @@ class UserProductItem extends StatelessWidget {
                   color: Theme.of(context).errorColor,
                 ),
                 onPressed: () {
-                  // DELETE PRODUCT
+                  showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                            title: Text("Delete Product"),
+                            content: Text(
+                                "Are you want to remove ${_product.title} ?"),
+                            actions: [
+                              FlatButton(
+                                  onPressed: () {
+                                    Provider.of<ProductsProvider>(context,
+                                            listen: false)
+                                        .removeProduct(_product);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Yes")),
+                              FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("No")),
+                            ],
+                          ));
                 }),
             IconButton(
                 icon: Icon(
@@ -32,7 +56,8 @@ class UserProductItem extends StatelessWidget {
                   color: Theme.of(context).primaryColor,
                 ),
                 onPressed: () {
-                  // EDIT PRODUCT
+                  Navigator.of(context).pushNamed(HandleProductPage.ROUTE_NAME,
+                      arguments: _product);
                 }),
           ],
         ),
