@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -17,8 +20,19 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleFavoriteState() {
+  Future<void> toggleFavoriteState() {
     isFavorite = !isFavorite;
-    notifyListeners();
+    final url =
+        "https://fluttershopapp-7de25-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json";
+    return patch(url,
+        body: json.encode({
+          "title": this.title,
+          "description": this.description,
+          "imageUrl": this.imageUrl,
+          "price": this.price,
+          "isFavorite": this.isFavorite,
+        })).then((response) {
+      notifyListeners();
+    }).catchError((error) => throw error);
   }
 }

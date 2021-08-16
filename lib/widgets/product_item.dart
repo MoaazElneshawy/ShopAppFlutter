@@ -5,11 +5,16 @@ import 'package:shopapp/providers/cart.dart';
 
 import '../models/product.dart';
 
-class ProductItem extends StatelessWidget {
+class ProductItem extends StatefulWidget {
   // final Product product;
 
   // ProductItem(this.product);
 
+  @override
+  _ProductItemState createState() => _ProductItemState();
+}
+
+class _ProductItemState extends State<ProductItem> {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
@@ -39,6 +44,7 @@ class ProductItem extends StatelessWidget {
                     : Icon(Icons.favorite_border),
                 onPressed: () {
                   product.toggleFavoriteState();
+                  setState(() {});
                 },
               ),
             ),
