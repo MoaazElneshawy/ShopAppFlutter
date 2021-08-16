@@ -14,13 +14,9 @@ class _HandleProductPageState extends State<HandleProductPage> {
   bool _isEdit = false;
   ProductsProvider _productProvider;
   Product _product = Product(
-      id: DateTime.now().toString(),
-      title: null,
-      description: null,
-      imageUrl: null,
-      price: null);
+      id: null, title: null, description: null, imageUrl: null, price: null);
 
-  Product _editedProduct = null;
+  Product _editedProduct;
 
   final _formKeyState = GlobalKey<FormState>();
   final _priceFocus = FocusNode();
@@ -61,10 +57,30 @@ class _HandleProductPageState extends State<HandleProductPage> {
       _isLoading = true;
     });
     if (_isEdit) {
-      _productProvider.updateProduct(_editedProduct, _product);
-      setState(() {
-        _isLoading = false;
-      });
+      try {
+        setState(() {
+          _isLoading = true;
+        });
+        await _productProvider.updateProduct(_editedProduct.id, _product);
+        Navigator.of(context).pop();
+      } catch (error) {
+        setState(() {
+          _isLoading = false;
+        });
+        showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: Text("error !"),
+                  content: Text(error.toString()),
+                  actions: [
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                        },
+                        child: Text("Ok"))
+                  ],
+                ));
+      }
     } else {
       try {
         await _productProvider.addNewProduct(_product);

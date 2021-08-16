@@ -16,6 +16,27 @@ class ProductsReviewPage extends StatefulWidget {
 class _ProductsReviewPageState extends State<ProductsReviewPage> {
   bool isFavoriteSelected = false;
 
+  var _isFirstCall = true;
+  var _isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    if (_isFirstCall) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<ProductsProvider>(context)
+          .fetchDataFromServer()
+          .then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _isFirstCall = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ProductsProvider>(context);
@@ -65,23 +86,25 @@ class _ProductsReviewPageState extends State<ProductsReviewPage> {
         ],
       ),
       drawer: MyDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: GridView.builder(
-          itemCount: products.length,
-          itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
-            value: products[index],
-            // create: (ctx)=>products[index],
-            // not using create because we didn't need the context passed from the create
-            child: ProductItem(),
-          ),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 3 / 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10),
-        ),
-      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: GridView.builder(
+                itemCount: products.length,
+                itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
+                  value: products[index],
+                  // create: (ctx)=>products[index],
+                  // not using create because we didn't need the context passed from the create
+                  child: ProductItem(),
+                ),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 3 / 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10),
+              ),
+            ),
     );
   }
 }

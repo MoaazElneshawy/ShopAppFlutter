@@ -6,7 +6,7 @@ import 'package:shopapp/models/product.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _products = [
-    Product(
+    /* Product(
       id: 'p1',
       title: 'Red Shirt',
       description: 'A red shirt - it is pretty red!',
@@ -38,7 +38,34 @@ class ProductsProvider with ChangeNotifier {
       imageUrl:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     )
+    */
   ];
+
+  Future<void> fetchDataFromServer() async {
+    try {
+      const url =
+          "https://fluttershopapp-7de25-default-rtdb.asia-southeast1.firebasedatabase.app/products.json";
+      var response = await http.get(url);
+      var body = json.decode(response.body) as Map<String, dynamic>;
+      List<Product> newItems = [];
+      body.forEach((id, product) {
+        newItems.add(Product(
+          id: id,
+          title: product["title"],
+          description: product["description"],
+          price: product["price"],
+          isFavorite: product["isFavorite"],
+          imageUrl: product["imageUrl"],
+        ));
+      });
+      print(" new  ${newItems.length}");
+      _products = newItems;
+      print("old  ${_products.length}");
+      notifyListeners();
+    } catch (error) {
+      throw error;
+    }
+  }
 
   List<Product> get products => [..._products]; // returns a copy of the list !
 
@@ -71,21 +98,36 @@ class ProductsProvider with ChangeNotifier {
           imageUrl: product.imageUrl,
           price: product.price,
           isFavorite: product.isFavorite);
+
       _products.insert(0, p);
       notifyListeners();
     }).catchError((error) => throw error);
   }
 
-  void updateProduct(Product old, Product _new) {
-    int index = _products.indexWhere((product) => product.id == old.id);
-    if (index != -1) {
-      _products[index] = _new;
-    }
-    notifyListeners();
+  Future<void> updateProduct(String id, Product product) {
+    final url =
+        "https://fluttershopapp-7de25-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json";
+
+    return http
+        .patch(url,
+            body: json.encode({
+              "title": product.title,
+              "description": product.description,
+              "imageUrl": product.imageUrl,
+              "price": product.price,
+            }))
+        .then((response) {
+      fetchDataFromServer();
+      notifyListeners();
+    }).catchError((error) => throw error);
   }
 
   void removeProduct(Product product) {
-    _products.remove(product);
+    final url =
+        "https://fluttershopapp-7de25-default-rtdb.asia-southeast1.firebasedatabase.app/products/${product.id}.json";
+    http.delete(url);
+    // _products.remove(product);
+    fetchDataFromServer();
     notifyListeners();
   }
 }
