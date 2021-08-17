@@ -47,6 +47,7 @@ class ProductsProvider with ChangeNotifier {
           "https://fluttershopapp-7de25-default-rtdb.asia-southeast1.firebasedatabase.app/products.json";
       var response = await http.get(url);
       var body = json.decode(response.body) as Map<String, dynamic>;
+      if (body == null) return;
       List<Product> newItems = [];
       body.forEach((id, product) {
         newItems.add(Product(
@@ -58,9 +59,7 @@ class ProductsProvider with ChangeNotifier {
           imageUrl: product["imageUrl"],
         ));
       });
-      print(" new  ${newItems.length}");
       _products = newItems;
-      print("old  ${_products.length}");
       notifyListeners();
     } catch (error) {
       throw error;
